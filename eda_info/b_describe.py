@@ -127,6 +127,7 @@ class Describe:
         return ans
     
     def col_info(self, col_names):
+        '''---------------------------------'''
         """_summary_
 
         Args:
@@ -143,5 +144,52 @@ class Describe:
             else:
                 ans = pd.concat([ans, temp], axis=0)
         return ans
+    
+    def feature_issues(self, ingnore_col=[]):
+        '''---------------------------------'''
+        """_summary_
+
+        Args:
+            ingnore_col (list, optional): _description_. Defaults to [].
+
+        Returns:
+            _type_: _description_
+        """
+        '''
+            function to get the columns of categorical, columns of missing categorical, columns of numeric, columns of missing numeric, and columns that are continous and unique in value
+        '''
+        
+        numeric = [col for col in self.df.select_dtypes(include=['number', np.number]) if col not in ingnore_col]
+        numeric_issue = [col for col in numeric if self.df[col].isna().sum() != 0]
+        numeric = [col for col in numeric if col not in numeric_issue]
+
+        categorical = [col for col in self.df.select_dtypes(exclude=['number', np.number]) if col not in ingnore_col]
+        categorical_issue = [col for col in categorical if self.df[col].isna().sum() != 0]
+        categorical = [col for col in categorical if col not in categorical_issue]
+        
+        # print(len(numeric_issue) + len(numeric) + len(categorical_issue) + len(categorical) + len(high_card))
+        return numeric, numeric_issue, categorical, categorical_issue
+
+    def get_highcorr(self, col='', cor_val=0.5):
+        '''
+            Find high corr in a df for a specific col
+        '''
+        c = self.df.corr() # get correlation matrix
+        s = c.unstack() # unpack correlation matrix
+        so = s.sort_values(ascending=False, kind="quicksort") # sort correlation matrix
+        corr_list_neg=[]
+        corr_list_pos=[]
+        for i, j in so.items():
+            if (i[0] != i[1]) and (abs(j) >= cor_val): # check for 1 correlations
+                if (j < 0):
+                    if ((i, j) not in corr_list_neg and (i[::-1], j) not in corr_list_neg) and (i[0] in [col] or i[1] in [col]):
+                        corr_list_neg.append((i, j))
+                    
+                else:
+                    if ((i, j) not in corr_list_pos and (i[::-1], j) not in corr_list_pos) and (i[0] in [col] or i[1] in [col]):
+                            corr_list_pos.append((i,j))
+                
+            
+        return corr_list_pos, corr_list_neg
             
             

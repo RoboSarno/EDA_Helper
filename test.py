@@ -1,7 +1,4 @@
-import get_feature_issue as gfi
-import remove_quantile as rq
-import get_high_corr as ghc
-import eda_info as bd
+import eda_info as eda
 import pandas as pd
 import numpy as np
 
@@ -20,19 +17,27 @@ df = pd.DataFrame({'a': list(np.random.rand(8)) + [123456, np.nan],       # floa
 # print(df)
 
 # # testing better_describe
-describe = bd.Describe(df)
-print(describe.col_info(['a', 'k']))
+# describe = eda.Describe(df)
+# print(describe.col_info(['a']))
+
+# issue = eda.Describe(df)
+# numeric, numeric_issue, categorical, categorical_issue = issue.feature_issues()
+# print(numeric, numeric_issue, categorical, categorical_issue)
+
+corr = eda.Describe(df)
+corr_list_pos, corr_list_neg = corr.get_highcorr('a', cor_val=0.5)
+print(corr_list_pos, corr_list_neg)
+
+# dist = eda.Distribution(df)
+# dist.graph_distributions()
+
+
+
+
+
 
 # print(ans.iloc[1, :]) # indexing the describe df
 
-
-# # testing get_transform_list
-# num, num_issue, cat, cat_issue = gfi.get_transform_list(df)
-# print(num, num_issue, cat, cat_issue)
-
-# testing remove_outliers
-# df = rq.remove_outliers(df, ignore_col=['e'])
-# print(df)
 
     
     
